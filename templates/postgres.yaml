@@ -1,0 +1,65 @@
+{{- if eq .Values.postgres.enabled true }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: keycloak-db
+spec:
+  serviceName: keycloak-db-svc
+  selector:
+    matchLabels:
+      keycloak: db
+  template:
+    metadata:
+      labels:
+        keycloak: db
+    spec:
+      containers:
+        - name: postgres 
+          image: "postgres:{{ .Values.postgres.image.tag }}"
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.name }}
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: {{ .Values.postgres.passwordSecretKey }} # airbyte
+            - name: POSTGRES_USER
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: {{ .Values.postgres.userSecretKey }} # airbyte
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: keycloak-db
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: keycloak-db
+          persistentVolumeClaim:
+            claimName: keycloak-db
+  volumeClaimTemplates:
+  - metadata:
+      name: keycloak-db
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-db-svc
+  annotations:
+  labels:
+    {{- include "airbyte-keycloak.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    keycloak: db
+{{- end }}

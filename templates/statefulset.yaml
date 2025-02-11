@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "airbyte-keycloak.fullname" . }}
+  labels:
+    {{- include "airbyte-keycloak.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "airbyte-keycloak.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "airbyte-keycloak.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "airbyte-keycloak.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: KEYCLOAK_HOSTNAME_URL
+              value: {{ .Values.keycloakUrl }} # ternary (printf "%s/auth" .Values.global.airbyteUrl) "" (ne .Values.global.edition "enterprise")
+
+            - name: KEYCLOAK_PORT
+              value: {{ .Values.service.port | quote }} # 8180
+
+            # NOTE: we only want to use this for keycloak (NOT keycloak-setup)
+            - name: JAVA_OPTS_APPEND
+              value: {{ printf "-Djgroups.dns.query=%s-airbyte-keycloak-headless-svc" .Release.Name }}
+
+            - name: KEYCLOAK_DATABASE_NAME
+              value: {{ .Values.database.name }} # "db-airbyte"
+
+            - name: KEYCLOAK_DATABASE_HOST
+              value: {{ .Values.database.host }} # printf "airbyte-db-svc.%s.svc.cluster.local" .Release.Namespace }}
+          
+            - name: KEYCLOAK_DATABASE_PORT
+              value: {{ .Values.database.port | quote }} # 5432
+
+            - name: KEYCLOAK_DATABASE_USERNAME
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: {{ .Values.database.userSecretKey }} # airbyte
+
+            - name: KEYCLOAK_DATABASE_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: {{ .Values.database.passwordSecretKey }} # airbyte
+
+            - name: KEYCLOAK_DATABASE_URL
+              value: "jdbc:postgresql://{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
+
+            - name: KEYCLOAK_ADMIN_USER
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: {{ .Values.admin.userSecretKey }} # airbyte
+
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: {{ .Values.admin.passwordSecretKey }} # airbyte
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
