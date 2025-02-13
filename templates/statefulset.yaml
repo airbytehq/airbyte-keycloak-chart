@@ -35,35 +35,35 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: KEYCLOAK_HOSTNAME_URL
-              value: {{ .Values.keycloakUrl }} # ternary (printf "%s/auth" .Values.global.airbyteUrl) "" (ne .Values.global.edition "enterprise")
+              value: {{ .Values.keycloakUrl }} 
 
             - name: KEYCLOAK_PORT
-              value: {{ .Values.service.port | quote }} # 8180
+              value: {{ .Values.service.port | default 8180 | quote }}
 
             # NOTE: we only want to use this for keycloak (NOT keycloak-setup)
             - name: JAVA_OPTS_APPEND
               value: {{ printf "-Djgroups.dns.query=%s-airbyte-keycloak-headless-svc" .Release.Name }}
 
             - name: KEYCLOAK_DATABASE_NAME
-              value: {{ .Values.database.name }} # "db-airbyte"
+              value: {{ .Values.database.name | default "keycloak" }}
 
             - name: KEYCLOAK_DATABASE_HOST
-              value: {{ .Values.database.host }} # printf "airbyte-db-svc.%s.svc.cluster.local" .Release.Namespace }}
+              value: {{ .Values.database.host | default (printf "airbyte-db-svc.%s.svc.cluster.local" .Release.Namespace) }}
           
             - name: KEYCLOAK_DATABASE_PORT
-              value: {{ .Values.database.port | quote }} # 5432
+              value: {{ .Values.database.port | default 5432 | quote }}
 
             - name: KEYCLOAK_DATABASE_USERNAME
               valueFrom: 
                 secretKeyRef:
                   name: keycloak-secrets
-                  key: {{ .Values.database.userSecretKey }} # airbyte
+                  key: {{ .Values.database.userSecretKey | default "KEYCLOAK_DATABASE_USERNAME" }}
 
             - name: KEYCLOAK_DATABASE_PASSWORD
               valueFrom: 
                 secretKeyRef:
                   name: keycloak-secrets
-                  key: {{ .Values.database.passwordSecretKey }} # airbyte
+                  key: {{ .Values.database.passwordSecretKey | default "KEYCLOAK_DATABASE_PASSWORD" }}
 
             - name: KEYCLOAK_DATABASE_URL
               value: "jdbc:postgresql://{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
@@ -72,13 +72,13 @@ spec:
               valueFrom: 
                 secretKeyRef:
                   name: keycloak-secrets
-                  key: {{ .Values.admin.userSecretKey }} # airbyte
+                  key: {{ .Values.admin.userSecretKey | default "KEYCLOAK_ADMIN_USER" }}
 
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom: 
                 secretKeyRef:
                   name: keycloak-secrets
-                  key: {{ .Values.admin.passwordSecretKey }} # airbyte
+                  key: {{ .Values.admin.passwordSecretKey | default "KEYCLOAK_ADMIN_PASSWORD" }}
 
           ports:
             - name: http
