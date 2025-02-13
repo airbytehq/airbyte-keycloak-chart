@@ -66,7 +66,7 @@ spec:
                   key: {{ .Values.database.passwordSecretKey | default "KEYCLOAK_DATABASE_PASSWORD" }}
 
             - name: KEYCLOAK_DATABASE_URL
-              value: "jdbc:postgresql://{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
+              value: "jdbc:postgresql://{{ .Values.database.host | default (printf "airbyte-db-svc.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.database.port | default 5432 | quote }}/{{ .Values.database.name | default "keycloak" }}"
 
             - name: KEYCLOAK_ADMIN_USER
               valueFrom: 
