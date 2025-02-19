@@ -30,7 +30,7 @@ Renders the database.name environment variable
 - name: KEYCLOAK_DATABASE_NAME
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_DATABASE_NAME
 {{- end }}
 
@@ -48,7 +48,7 @@ Renders the database.host environment variable
 - name: KEYCLOAK_DATABASE_HOST
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_DATABASE_HOST
 {{- end }}
 
@@ -66,7 +66,7 @@ Renders the database.port environment variable
 - name: KEYCLOAK_DATABASE_PORT
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_DATABASE_PORT
 {{- end }}
 
@@ -134,7 +134,7 @@ Renders the database.url environment variable
 - name: KEYCLOAK_DATABASE_URL
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_DATABASE_URL
 {{- end }}
 
@@ -152,7 +152,7 @@ Renders the database.schema environment variable
 - name: KEYCLOAK_DATABASE_SCHEMA
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_DATABASE_SCHEMA
 {{- end }}
 

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-airbyte-keycloak
+  name: {{ .Release.Name }}-airbyte-keycloak-env
   labels:
     {{- include "airbyte-keycloak.labels" . | nindent 4 }}
 data:

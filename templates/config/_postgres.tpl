@@ -30,7 +30,7 @@ Renders the postgres.name environment variable
 - name: POSTGRES_DB
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: POSTGRES_DB
 {{- end }}
 
@@ -98,7 +98,7 @@ Renders the postgres.pgdataDir environment variable
 - name: PGDATA
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: PGDATA
 {{- end }}
 

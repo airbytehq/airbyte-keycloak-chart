@@ -19,7 +19,7 @@ Renders the keycloak.url environment variable
 - name: KEYCLOAK_HOSTNAME_URL
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_HOSTNAME_URL
 {{- end }}
 
@@ -37,7 +37,7 @@ Renders the keycloak.port environment variable
 - name: KEYCLOAK_PORT
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: KEYCLOAK_PORT
 {{- end }}
 
@@ -55,7 +55,7 @@ Renders the keycloak.javaOpts environment variable
 - name: JAVA_OPTS_APPEND
   valueFrom:
     configMapKeyRef:
-      name: {{ .Release.Name }}-airbyte-keycloak
+      name: {{ .Release.Name }}-airbyte-keycloak-env
       key: JAVA_OPTS_APPEND
 {{- end }}
 
