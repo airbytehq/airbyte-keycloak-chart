@@ -21,3 +21,6 @@
 .idea/
 *.tmproj
 .vscode/
+
+# Config Spec
+config.yaml

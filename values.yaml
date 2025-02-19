@@ -26,21 +26,26 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# Keycloak URL
-keycloakUrl: ""
+secretName: ""
+
+keycloak:
+  url: ""
+  port: 8180
+  javaOpts: ""
 
 # Keycloak Admin Configuration
 admin:
-  secretName: "keycloak-secrets"
+  secretName: ""
   userSecretKey: ""
   passwordSecretKey: ""
 
 # Keycloak Database Configuration
 database:
-  secretName: "keycloak-secrets"
+  secretName: ""
+  schema: keycloak
   host: ""
   port: 5432
-  name: "keycloak"
+  name: keycloak
   userSecretKey: ""
   passwordSecretKey: ""
 
@@ -50,8 +55,8 @@ postgres:
   image:
     tag: "17"
 
-  userSecretKey: DATABASE_USER
-  passwordSecretKey: DATABASE_PASSWORD
+  userSecretKey: POSTGRES_USER
+  passwordSecretKey: POSTGRES_PASSWORD
 
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/

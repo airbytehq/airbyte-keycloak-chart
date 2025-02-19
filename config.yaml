@@ -1,0 +1,76 @@
+admin:
+  keyBasePath: admin
+  config:
+    - env: KEYCLOAK_ADMIN_USER
+      key: user
+      sensitive: true
+
+    - env: KEYCLOAK_ADMIN_PASSWORD
+      key: password
+      sensitive: true
+
+database:
+  keyBasePath: database
+  config:
+    - env: KEYCLOAK_DATABASE_NAME
+      key: name
+      defaultValue: "keycloak"
+
+    - env: KEYCLOAK_DATABASE_HOST
+      key: host
+      defaultValueExp: (printf "keycloak-db-svc.%s.svc.cluster.local" .Release.Namespace)
+  
+    - env: KEYCLOAK_DATABASE_PORT
+      key: port
+      defaultValue: 5432
+
+    - env: KEYCLOAK_DATABASE_USERNAME
+      key: user
+      sensitive: true
+      defaultValue: airbyte
+
+    - env: KEYCLOAK_DATABASE_PASSWORD
+      key: password
+      sensitive: true
+      defaultValue: airbyte
+
+    - env: KEYCLOAK_DATABASE_URL
+      key: url
+      valueExp: (printf "jdbc:postgresql://%s:%d/%s?currentSchema=%s" (include "airbyte-keycloak.database.host" .) (int (include "airbyte-keycloak.database.port" .)) (include "airbyte-keycloak.database.name" .) (include "airbyte-keycloak.database.schema" .))
+
+    - env: KEYCLOAK_DATABASE_SCHEMA
+      key: schema
+      defaultValue: keycloak
+
+keycloak:
+  config:
+    - env: KEYCLOAK_HOSTNAME_URL
+      key: url
+
+    - env: KEYCLOAK_PORT
+      key: port
+      defaultValue: 8180
+
+    # NOTE: we only want to use this for keycloak (NOT keycloak-setup)
+    - env: JAVA_OPTS_APPEND
+      keyBasepath: ""
+      key: javaOpts
+      valueExp: (printf "-Djgroups.dns.query=%s-airbyte-keycloak-headless-svc" .Release.Name)
+
+postgres:
+  config:
+    - env: POSTGRES_DB
+      key: name
+      defaultValue: "keycloak"
+    
+    - env: POSTGRES_PASSWORD
+      key: password
+      sensitive: true
+
+    - env: POSTGRES_USER
+      key: user
+      sensitive: true
+
+    - env: PGDATA
+      key: pgdataDir
+      value: /var/lib/postgresql/data/pgdata
