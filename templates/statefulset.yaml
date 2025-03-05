@@ -5,6 +5,10 @@ metadata:
   labels:
     {{- include "airbyte-keycloak.labels" . | nindent 4 }}
 spec:
+  replicas: {{ .Values.replicaCount | default 2 }}
+  podManagementPolicy: OrderedReady # embedded infinispan does not handle parallel joins well, src https://github.com/keycloak/keycloak/issues/21108#issuecomment-1599010602
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       {{- include "airbyte-keycloak.selectorLabels" . | nindent 6 }}
