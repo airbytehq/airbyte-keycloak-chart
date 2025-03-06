@@ -40,6 +40,7 @@ admin:
   secretName: ""
   userSecretKey: ""
   passwordSecretKey: ""
+  hostnameUrl: ""
 
 # Keycloak Database Configuration
 database:

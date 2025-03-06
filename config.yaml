@@ -9,6 +9,10 @@ admin:
       key: password
       sensitive: true
 
+    - env: KEYCLOAK_ADMIN_HOSTNAME_URL
+      key: hostnameUrl
+      defaultValueExp: (printf "http://localhost:%d/auth" (include "airbyte-keycloak.keycloak.port" .))
+
 database:
   keyBasePath: database
   config:
@@ -58,6 +62,7 @@ keycloak:
       valueExp: (printf "-Djgroups.dns.query=%s-airbyte-keycloak-headless-svc" .Release.Name)
 
 postgres:
+  secretNamePath: postgres
   config:
     - env: POSTGRES_DB
       key: name

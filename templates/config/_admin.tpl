@@ -67,11 +67,37 @@ Renders the admin.password environment variable
 {{- end }}
 
 {{/*
+Renders the admin.hostnameUrl value
+*/}}
+{{- define "airbyte-keycloak.admin.hostnameUrl" }}
+    {{- .Values.admin.hostnameUrl | default (printf "http://localhost:%d/auth" (int (include "airbyte-keycloak.keycloak.port" .))) }}
+{{- end }}
+
+{{/*
+Renders the admin.hostnameUrl environment variable
+*/}}
+{{- define "airbyte-keycloak.admin.hostnameUrl.env" }}
+- name: KEYCLOAK_ADMIN_HOSTNAME_URL
+  valueFrom:
+    configMapKeyRef:
+      name: {{ .Release.Name }}-airbyte-keycloak-env
+      key: KEYCLOAK_ADMIN_HOSTNAME_URL
+{{- end }}
+
+{{/*
 Renders the set of all admin environment variables
 */}}
 {{- define "airbyte-keycloak.admin.envs" }}
 {{- include "airbyte-keycloak.admin.user.env" . }}
 {{- include "airbyte-keycloak.admin.password.env" . }}
+{{- include "airbyte-keycloak.admin.hostnameUrl.env" . }}
+{{- end }}
+
+{{/*
+Renders the set of all admin config map variables
+*/}}
+{{- define "airbyte-keycloak.admin.configVars" }}
+KEYCLOAK_ADMIN_HOSTNAME_URL: {{ include "airbyte-keycloak.admin.hostnameUrl" . | quote }}
 {{- end }}
 
 {{/*
